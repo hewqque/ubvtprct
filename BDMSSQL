@@ -1,0 +1,701 @@
+USE [master]
+GO
+/****** Object:  Database [FitnessUBVT]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE DATABASE [FitnessUBVT]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'FitnessUBVT', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\FitnessUBVT.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'FitnessUBVT_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\FitnessUBVT_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+ALTER DATABASE [FitnessUBVT] SET COMPATIBILITY_LEVEL = 150
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [FitnessUBVT].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [FitnessUBVT] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET AUTO_CLOSE ON 
+GO
+ALTER DATABASE [FitnessUBVT] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [FitnessUBVT] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [FitnessUBVT] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [FitnessUBVT] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [FitnessUBVT] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [FitnessUBVT] SET  MULTI_USER 
+GO
+ALTER DATABASE [FitnessUBVT] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [FitnessUBVT] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [FitnessUBVT] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [FitnessUBVT] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [FitnessUBVT] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [FitnessUBVT] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [FitnessUBVT] SET QUERY_STORE = OFF
+GO
+USE [FitnessUBVT]
+GO
+/****** Object:  Table [dbo].[Clients]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Clients](
+	[ClientID] [int] IDENTITY(1,1) NOT NULL,
+	[LastName] [nvarchar](50) NOT NULL,
+	[FirstName] [nvarchar](50) NOT NULL,
+	[MiddleName] [nvarchar](50) NULL,
+	[BirthDate] [date] NULL,
+	[Gender] [char](1) NULL,
+	[Phone] [nvarchar](20) NOT NULL,
+	[Email] [nvarchar](100) NULL,
+	[Address] [nvarchar](200) NULL,
+	[RegistrationDate] [datetime] NULL,
+	[Notes] [nvarchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ClientID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MembershipTypes]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MembershipTypes](
+	[MembershipTypeID] [int] IDENTITY(1,1) NOT NULL,
+	[TypeName] [nvarchar](100) NOT NULL,
+	[Description] [nvarchar](500) NULL,
+	[DurationDays] [int] NOT NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[AccessLevel] [int] NOT NULL,
+	[IsActive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MembershipTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ClientMemberships]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ClientMemberships](
+	[MembershipID] [int] IDENTITY(1,1) NOT NULL,
+	[ClientID] [int] NOT NULL,
+	[MembershipTypeID] [int] NOT NULL,
+	[StartDate] [date] NOT NULL,
+	[EndDate] [date] NOT NULL,
+	[PurchaseDate] [datetime] NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[IsActive] [bit] NULL,
+	[Notes] [nvarchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MembershipID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_ActiveClientsWithMemberships]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vw_ActiveClientsWithMemberships] AS
+SELECT 
+    c.ClientID,
+    c.LastName + ' ' + c.FirstName + ISNULL(' ' + c.MiddleName, '') AS FullName,
+    c.Phone,
+    c.Email,
+    mt.TypeName AS MembershipType,
+    cm.StartDate,
+    cm.EndDate,
+    DATEDIFF(DAY, GETDATE(), cm.EndDate) AS DaysRemaining
+FROM 
+    Clients c
+    INNER JOIN ClientMemberships cm ON c.ClientID = cm.ClientID
+    INNER JOIN MembershipTypes mt ON cm.MembershipTypeID = mt.MembershipTypeID
+WHERE 
+    cm.IsActive = 1 
+    AND cm.EndDate >= GETDATE();
+GO
+/****** Object:  Table [dbo].[OrderDetails]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OrderDetails](
+	[OrderDetailID] [int] IDENTITY(1,1) NOT NULL,
+	[OrderID] [int] NOT NULL,
+	[ServiceID] [int] NOT NULL,
+	[EmployeeID] [int] NULL,
+	[HallID] [int] NULL,
+	[ScheduledDate] [date] NOT NULL,
+	[StartTime] [time](7) NOT NULL,
+	[EndTime] [time](7) NOT NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[Status] [nvarchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderDetailID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Employees]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Employees](
+	[EmployeeID] [int] IDENTITY(1,1) NOT NULL,
+	[LastName] [nvarchar](50) NOT NULL,
+	[FirstName] [nvarchar](50) NOT NULL,
+	[MiddleName] [nvarchar](50) NULL,
+	[Position] [nvarchar](50) NOT NULL,
+	[BirthDate] [date] NULL,
+	[Gender] [char](1) NULL,
+	[Phone] [nvarchar](20) NOT NULL,
+	[Email] [nvarchar](100) NULL,
+	[HireDate] [date] NOT NULL,
+	[Salary] [decimal](10, 2) NULL,
+	[IsActive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[EmployeeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Services]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Services](
+	[ServiceID] [int] IDENTITY(1,1) NOT NULL,
+	[ServiceName] [nvarchar](100) NOT NULL,
+	[Description] [nvarchar](500) NULL,
+	[Duration] [int] NOT NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[IsActive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ServiceID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TrainingHalls]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TrainingHalls](
+	[HallID] [int] IDENTITY(1,1) NOT NULL,
+	[HallName] [nvarchar](100) NOT NULL,
+	[Description] [nvarchar](500) NULL,
+	[Capacity] [int] NULL,
+	[Area] [decimal](10, 2) NULL,
+	[IsActive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[HallID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[OrderID] [int] IDENTITY(1,1) NOT NULL,
+	[ClientID] [int] NOT NULL,
+	[EmployeeID] [int] NULL,
+	[OrderDate] [datetime] NULL,
+	[TotalAmount] [decimal](10, 2) NOT NULL,
+	[Status] [nvarchar](50) NULL,
+	[PaymentMethod] [nvarchar](50) NULL,
+	[Notes] [nvarchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_WeeklySchedule]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vw_WeeklySchedule] AS
+SELECT
+    od.ScheduledDate,
+    od.StartTime,
+    od.EndTime,
+    s.ServiceName,
+    h.HallName,
+    c.LastName + ' ' + c.FirstName AS ClientName,
+    e.LastName + ' ' + e.FirstName AS TrainerName
+FROM
+    OrderDetails od
+    INNER JOIN Services s ON od.ServiceID = s.ServiceID
+    INNER JOIN Orders o ON od.OrderID = o.OrderID
+    INNER JOIN Clients c ON o.ClientID = c.ClientID
+    LEFT JOIN Employees e ON od.EmployeeID = e.EmployeeID
+    LEFT JOIN TrainingHalls h ON od.HallID = h.HallID
+WHERE
+    od.ScheduledDate BETWEEN GETDATE() AND DATEADD(DAY, 7, GETDATE())
+    AND od.Status = 'Запланировано'
+GO
+/****** Object:  View [dbo].[vw_MonthlyRevenueByService]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vw_MonthlyRevenueByService] AS
+SELECT
+    s.ServiceName,
+    COUNT(od.OrderDetailID) AS SessionsCount,
+    SUM(od.Price) AS TotalRevenue,
+    MONTH(o.OrderDate) AS Month,
+    YEAR(o.OrderDate) AS Year
+FROM
+    OrderDetails od
+    INNER JOIN Services s ON od.ServiceID = s.ServiceID
+    INNER JOIN Orders o ON od.OrderID = o.OrderID
+WHERE
+    o.OrderDate >= DATEADD(MONTH, -1, GETDATE())
+GROUP BY
+    s.ServiceName, MONTH(o.OrderDate), YEAR(o.OrderDate);
+GO
+/****** Object:  Table [dbo].[AuthTable]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AuthTable](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[EmployeeID] [int] NULL,
+	[Userlogin] [nvarchar](25) NULL,
+	[UserPassword] [nvarchar](250) NULL,
+	[is_actual] [bit] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[EmployeeSchedules]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeSchedules](
+	[ScheduleID] [int] IDENTITY(1,1) NOT NULL,
+	[EmployeeID] [int] NOT NULL,
+	[DayOfWeek] [int] NOT NULL,
+	[StartTime] [time](7) NOT NULL,
+	[EndTime] [time](7) NOT NULL,
+	[IsActive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ScheduleID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Equipment]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Equipment](
+	[EquipmentID] [int] IDENTITY(1,1) NOT NULL,
+	[EquipmentName] [nvarchar](100) NOT NULL,
+	[Description] [nvarchar](500) NULL,
+	[PurchaseDate] [date] NULL,
+	[LastMaintenanceDate] [date] NULL,
+	[Status] [nvarchar](50) NULL,
+	[Location] [nvarchar](100) NULL,
+	[WarrantyUntil] [date] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[EquipmentID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ClientMemberships_ClientID]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_ClientMemberships_ClientID] ON [dbo].[ClientMemberships]
+(
+	[ClientID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ClientMemberships_EndDate]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_ClientMemberships_EndDate] ON [dbo].[ClientMemberships]
+(
+	[EndDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Clients_Phone]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_Clients_Phone] ON [dbo].[Clients]
+(
+	[Phone] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Employees_Position]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_Employees_Position] ON [dbo].[Employees]
+(
+	[Position] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_EmployeeSchedules_EmployeeID]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_EmployeeSchedules_EmployeeID] ON [dbo].[EmployeeSchedules]
+(
+	[EmployeeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_OrderDetails_OrderID]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_OrderDetails_OrderID] ON [dbo].[OrderDetails]
+(
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_OrderDetails_ScheduledDate]    Script Date: 06.07.2025 15:07:51 ******/
+CREATE NONCLUSTERED INDEX [IX_OrderDetails_ScheduledDate] ON [dbo].[OrderDetails]
+(
+	[ScheduledDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[ClientMemberships] ADD  DEFAULT (getdate()) FOR [PurchaseDate]
+GO
+ALTER TABLE [dbo].[ClientMemberships] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Clients] ADD  DEFAULT (getdate()) FOR [RegistrationDate]
+GO
+ALTER TABLE [dbo].[Employees] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[EmployeeSchedules] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Equipment] ADD  DEFAULT ('Исправен') FOR [Status]
+GO
+ALTER TABLE [dbo].[MembershipTypes] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[OrderDetails] ADD  DEFAULT ('Запланировано') FOR [Status]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT (getdate()) FOR [OrderDate]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ('Новый') FOR [Status]
+GO
+ALTER TABLE [dbo].[Services] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[TrainingHalls] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[ClientMemberships]  WITH CHECK ADD FOREIGN KEY([ClientID])
+REFERENCES [dbo].[Clients] ([ClientID])
+GO
+ALTER TABLE [dbo].[ClientMemberships]  WITH CHECK ADD FOREIGN KEY([MembershipTypeID])
+REFERENCES [dbo].[MembershipTypes] ([MembershipTypeID])
+GO
+ALTER TABLE [dbo].[EmployeeSchedules]  WITH CHECK ADD FOREIGN KEY([EmployeeID])
+REFERENCES [dbo].[Employees] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD FOREIGN KEY([EmployeeID])
+REFERENCES [dbo].[Employees] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD FOREIGN KEY([HallID])
+REFERENCES [dbo].[TrainingHalls] ([HallID])
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD FOREIGN KEY([OrderID])
+REFERENCES [dbo].[Orders] ([OrderID])
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD FOREIGN KEY([ServiceID])
+REFERENCES [dbo].[Services] ([ServiceID])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([ClientID])
+REFERENCES [dbo].[Clients] ([ClientID])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([EmployeeID])
+REFERENCES [dbo].[Employees] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[Clients]  WITH CHECK ADD CHECK  (([Gender]='Ж' OR [Gender]='М'))
+GO
+ALTER TABLE [dbo].[Employees]  WITH CHECK ADD CHECK  (([Gender]='Ж' OR [Gender]='М'))
+GO
+ALTER TABLE [dbo].[EmployeeSchedules]  WITH CHECK ADD CHECK  (([DayOfWeek]>=(1) AND [DayOfWeek]<=(7)))
+GO
+/****** Object:  StoredProcedure [dbo].[sp_BookSession]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_BookSession]
+    @ClientID INT,
+    @ServiceID INT,
+    @EmployeeID INT = NULL,
+    @HallID INT = NULL,
+    @ScheduledDate DATE,
+    @StartTime TIME,
+    @Notes NVARCHAR(500) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @OrderID INT;
+    DECLARE @Price DECIMAL(10, 2);
+    DECLARE @Duration INT;
+    
+    -- Получаем цену и продолжительность услуги
+    SELECT @Price = Price, @Duration = Duration
+    FROM Services
+    WHERE ServiceID = @ServiceID;
+    
+    -- Создаем заказ
+    INSERT INTO Orders (ClientID, TotalAmount, Status, Notes)
+    VALUES (@ClientID, @Price, 'Новый', @Notes);
+    
+    SET @OrderID = SCOPE_IDENTITY();
+    
+    -- Добавляем детали заказа
+    INSERT INTO OrderDetails (OrderID, ServiceID, EmployeeID, HallID, ScheduledDate, StartTime, Price)
+    VALUES (@OrderID, @ServiceID, @EmployeeID, @HallID, @ScheduledDate, @StartTime, @Price);
+    
+    SELECT @OrderID AS OrderID, SCOPE_IDENTITY() AS OrderDetailID;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_FindAvailableSlots]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_FindAvailableSlots]
+    @ServiceID INT,
+    @Date DATE,
+    @EmployeeID INT = NULL,
+    @HallID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @Duration INT;
+    DECLARE @StartTime TIME = '08:00';
+    DECLARE @EndTime TIME = '22:00';
+    
+    -- Получаем продолжительность услуги
+    SELECT @Duration = Duration FROM Services WHERE ServiceID = @ServiceID;
+    
+    -- Создаем временную таблицу для всех возможных временных слотов
+    CREATE TABLE #AllSlots (SlotTime TIME);
+    
+    -- Заполняем временную таблицу с интервалом в 15 минут
+    WHILE @StartTime <= @EndTime
+    BEGIN
+        INSERT INTO #AllSlots VALUES (@StartTime);
+        SET @StartTime = DATEADD(MINUTE, 15, @StartTime);
+    END;
+    
+    -- Ищем занятые слоты
+    SELECT DISTINCT
+        od.StartTime AS BusyStartTime,
+        DATEADD(MINUTE, s.Duration, od.StartTime) AS BusyEndTime
+    INTO #BusySlots
+    FROM
+        OrderDetails od
+        INNER JOIN Services s ON od.ServiceID = s.ServiceID
+    WHERE
+        od.ScheduledDate = @Date
+        AND od.Status = 'Запланировано'
+        AND ((@EmployeeID IS NULL) OR (od.EmployeeID = @EmployeeID))
+        AND ((@HallID IS NULL) OR (od.HallID = @HallID));
+    
+    -- Возвращаем свободные слоты
+    SELECT
+        s.SlotTime AS StartTime,
+        DATEADD(MINUTE, @Duration, s.SlotTime) AS EndTime
+    FROM
+        #AllSlots s
+    WHERE
+        NOT EXISTS (
+            SELECT 1 FROM #BusySlots b
+            WHERE s.SlotTime < b.BusyEndTime
+            AND DATEADD(MINUTE, @Duration, s.SlotTime) > b.BusyStartTime
+        )
+        AND DATEADD(MINUTE, @Duration, s.SlotTime) <= @EndTime
+    ORDER BY
+        s.SlotTime;
+    
+    -- Удаляем временные таблицы
+    DROP TABLE #AllSlots;
+    DROP TABLE #BusySlots;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_PurchaseMembership]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_PurchaseMembership]
+    @ClientID INT,
+    @MembershipTypeID INT,
+    @StartDate DATE = NULL,
+    @Price DECIMAL(10, 2) = NULL,
+    @Notes NVARCHAR(500) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Если дата начала не указана, используем текущую дату
+    IF @StartDate IS NULL
+        SET @StartDate = GETDATE();
+    
+    -- Если цена не указана, берем из типа абонемента
+    IF @Price IS NULL
+        SELECT @Price = Price FROM MembershipTypes WHERE MembershipTypeID = @MembershipTypeID;
+    
+    -- Деактивируем старые абонементы клиента
+    UPDATE ClientMemberships
+    SET IsActive = 0
+    WHERE ClientID = @ClientID AND IsActive = 1;
+    
+    -- Добавляем новый абонемент
+    INSERT INTO ClientMemberships (ClientID, MembershipTypeID, StartDate, Price, Notes)
+    VALUES (@ClientID, @MembershipTypeID, @StartDate, @Price, @Notes);
+    
+    SELECT SCOPE_IDENTITY() AS NewMembershipID;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_RegisterClient]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_RegisterClient]
+    @LastName NVARCHAR(50),
+    @FirstName NVARCHAR(50),
+    @MiddleName NVARCHAR(50) = NULL,
+    @BirthDate DATE = NULL,
+    @Gender CHAR(1) = NULL,
+    @Phone NVARCHAR(20),
+    @Email NVARCHAR(100) = NULL,
+    @Address NVARCHAR(200) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO Clients (LastName, FirstName, MiddleName, BirthDate, Gender, Phone, Email, Address)
+    VALUES (@LastName, @FirstName, @MiddleName, @BirthDate, @Gender, @Phone, @Email, @Address);
+    
+    SELECT SCOPE_IDENTITY() AS NewClientID;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_TrainerWorkloadReport]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_TrainerWorkloadReport]
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Если даты не указаны, берем текущий месяц
+    IF @StartDate IS NULL
+        SET @StartDate = DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1);
+    
+    IF @EndDate IS NULL
+        SET @EndDate = EOMONTH(GETDATE());
+    
+    SELECT
+        e.EmployeeID,
+        e.LastName + ' ' + e.FirstName AS TrainerName,
+        COUNT(od.OrderDetailID) AS SessionsCount,
+        SUM(s.Duration) AS TotalMinutes,
+        SUM(od.Price) AS TotalRevenue
+    FROM
+        Employees e
+        INNER JOIN OrderDetails od ON e.EmployeeID = od.EmployeeID
+        INNER JOIN Services s ON od.ServiceID = s.ServiceID
+    WHERE
+        od.ScheduledDate BETWEEN @StartDate AND @EndDate
+        AND od.Status = 'Запланировано'
+        AND e.Position = 'Тренер'
+    GROUP BY
+        e.EmployeeID, e.LastName, e.FirstName
+    ORDER BY
+        SessionsCount DESC;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_UpdateMembershipStatuses]    Script Date: 06.07.2025 15:07:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_UpdateMembershipStatuses]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Деактивируем просроченные абонементы
+    UPDATE ClientMemberships
+    SET IsActive = 0
+    WHERE IsActive = 1 AND EndDate < GETDATE();
+    
+    -- Возвращаем статистику
+    SELECT
+        SUM(CASE WHEN IsActive = 1 AND EndDate >= GETDATE() THEN 1 ELSE 0 END) AS ActiveMemberships,
+        SUM(CASE WHEN IsActive = 1 AND EndDate < GETDATE() THEN 1 ELSE 0 END) AS ExpiredMemberships,
+        SUM(CASE WHEN IsActive = 0 THEN 1 ELSE 0 END) AS InactiveMemberships
+    FROM
+        ClientMemberships;
+END;
+GO
+USE [master]
+GO
+ALTER DATABASE [FitnessUBVT] SET  READ_WRITE 
+GO
